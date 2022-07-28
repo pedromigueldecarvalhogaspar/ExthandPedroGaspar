@@ -13,12 +13,18 @@ namespace CA
     class Run
     {
 
-        public static void Action()
+        //Here I placed the method that reaches the info from the API and use it.
+
+        public static void MinMax()
         {
+
+            #region Input
             string TimeFrame = "1h";
             string Symbol = "tBTCEUR";
             string Section = "last";
+            #endregion
 
+            #region Request and turninig the string in array
             string stringUrl = String.Format($"https://api-pub.bitfinex.com/v2/candles/trade:{TimeFrame}:{Symbol}/{Section}");
             WebRequest requestObjGet = WebRequest.Create(stringUrl);
             requestObjGet.Method = "GET";
@@ -34,8 +40,9 @@ namespace CA
                 Console.WriteLine($"The original string gotten by the request is: {stringResult}");
                 array = stringResult.Split(',');
             }
+            #endregion
 
-
+            #region Get the max, min and calculate average
             double max = 0;
             double min = 0;
             double average = 0;
@@ -55,6 +62,7 @@ namespace CA
                 }
             }
             Console.WriteLine($"The max is:{max}, the min is:{min} and the average is:{average}\n\n");
+            #endregion
         }
     }
 
