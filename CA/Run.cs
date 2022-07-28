@@ -16,7 +16,7 @@ namespace CA
         public static void Cena()
         {
             string TimeFrame = "1h";
-            string Symbol = "tBTCUSD";
+            string Symbol = "tBTCEUR";
             string Section = "last";
 
             string stringUrl = String.Format($"https://api-pub.bitfinex.com/v2/candles/trade:{TimeFrame}:{Symbol}/{Section}");
@@ -31,22 +31,22 @@ namespace CA
             {
                 StreamReader sr = new StreamReader(stream);
                 stringResult = sr.ReadToEnd();
-                Console.WriteLine(stringResult);
+                Console.WriteLine($"The original string gotten by the request is: {stringResult}");
                 array = stringResult.Split(',');
             }
 
 
-            double max=0;
-            double min =0;
+            double max = 0;
+            double min = 0;
             double average = 0;
             for (int i = 0; i < array.Length; i++)
             {
                 switch (i)
                 {
-                    case 2:
+                    case 3:
                         max = double.Parse(array[i], CultureInfo.InvariantCulture.NumberFormat);
                         break;
-                    case 3:
+                    case 4:
                         min = double.Parse(array[i], CultureInfo.InvariantCulture.NumberFormat);
                         average = (max + min) / 2;
                         break;
@@ -54,11 +54,7 @@ namespace CA
                         break;
                 }
             }
-
-
-            Console.WriteLine($"The max is {max}, the min is {min} and the average is {average}\n\n");
-
-
+            Console.WriteLine($"The max is:{max}, the min is:{min} and the average is:{average}\n\n");
         }
     }
 
