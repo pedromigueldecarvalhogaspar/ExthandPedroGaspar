@@ -13,7 +13,7 @@ namespace CA
     class Run
     {
 
-        public static void Cena()
+        public static void Action()
         {
             string TimeFrame = "1h";
             string Symbol = "tBTCEUR";
