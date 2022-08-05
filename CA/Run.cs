@@ -1,69 +1,69 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using NPOI.SS.Formula.Functions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace CA
 {
     class Run
     {
-
-        //Here I placed the method that reaches the info from the API and use it.
-
         public static void MinMax()
         {
 
-            #region Input
-            string TimeFrame = "1h";
-            string Symbol = "tBTCEUR";
-            string Section = "last";
-            #endregion
+            string stringUrl = "https://api-pub.bitfinex.com/v2/trades/tBTCEUR/hist?limit=1000";
 
-            #region Request and turninig the string in array
-            string stringUrl = String.Format($"https://api-pub.bitfinex.com/v2/candles/trade:{TimeFrame}:{Symbol}/{Section}");
-            WebRequest requestObjGet = WebRequest.Create(stringUrl);
-            requestObjGet.Method = "GET";
-            HttpWebResponse responseObjGet = null;
-            responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
-
-            string stringResult = null;
-            string[] array;
-            using (Stream stream = responseObjGet.GetResponseStream())
+            using (var client = new HttpClient())
             {
-                StreamReader sr = new StreamReader(stream);
-                stringResult = sr.ReadToEnd();
-                Console.WriteLine($"The original string gotten by the request is: {stringResult}");
-                array = stringResult.Split(',');
-            }
-            #endregion
+                var endpoint = new Uri(stringUrl);
+                var result = client.GetAsync(endpoint).Result;
+                var json = result.Content.ReadAsStringAsync().Result;
+                var obj = JsonConvert.DeserializeObject<dynamic>(json);
 
-            #region Get the max, min and calculate average
-            double max = 0;
-            double min = 0;
-            double average = 0;
-            for (int i = 0; i < array.Length; i++)
-            {
-                switch (i)
+                int timeCount = 0;
+                int maxPrice = 0;
+                int minPrice = 0;
+                
+                for (int i = 0; i < obj.Count; i++)
                 {
-                    case 3:
-                        max = double.Parse(array[i], CultureInfo.InvariantCulture.NumberFormat);
-                        break;
-                    case 4:
-                        min = double.Parse(array[i], CultureInfo.InvariantCulture.NumberFormat);
-                        average = (max + min) / 2;
-                        break;
-                    default:
-                        break;
+                    
+                    
+                    int search = obj[i][3];
+                    const int hour = 3600000;
+
+                    timeCount = obj[0][1] - obj[i][1];
+                    maxPrice = obj[0][3];
+                    minPrice = obj[0][3];
+
+                    Console.WriteLine(timeCount);
+
+                    if (search > maxPrice)
+                    {
+                        maxPrice = search;
+                    }
+
+                    if (search < minPrice)
+                    {
+                        minPrice = search;
+                    }
+
+                    if (timeCount > hour)
+                    {
+                        Console.WriteLine($"In the last {timeCount} miliseconds:\nMin value:{minPrice};\nMax value:{maxPrice};\nAverage value:{(maxPrice + minPrice) / 2}");
+                        return;
+                    }
                 }
             }
-            Console.WriteLine($"The max is:{max}, the min is:{min} and the average is:{average}\n\n");
-            #endregion
         }
     }
-
 }
+
+
