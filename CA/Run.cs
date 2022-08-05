@@ -43,8 +43,6 @@ namespace CA
                     maxPrice = obj[0][3];
                     minPrice = obj[0][3];
 
-                    Console.WriteLine(timeCount);
-
                     if (search > maxPrice)
                     {
                         maxPrice = search;
